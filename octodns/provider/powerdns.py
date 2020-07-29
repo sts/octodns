@@ -373,6 +373,10 @@ class PowerDnsBaseProvider(BaseProvider):
         changes = plan.changes
         self.log.debug('_apply: zone=%s, len(changes)=%d', desired.name,
                        len(changes))
+ 
+        # Force the operation order to be Delete() before Create()
+        # Helps avoid problems in updating a CNAME record into an A record.
+        changes.reverse()
 
         mods = []
         for change in changes:
@@ -441,7 +445,7 @@ class PowerDnsProvider(PowerDnsBaseProvider):
         # The port on which PowerDNS api is listening (optional, default 8081)
         port: 8081
         # The nameservers to use for this provider (optional,
-        #   default unmanaged)
+        #   default unmfanaged)
         nameserver_values:
             - 1.2.3.4.
             - 1.2.3.5.
